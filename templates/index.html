@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Text-to-Image Generator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+      background-color: #f0f0f0;
+      text-align: center;
+    }
+    #prompt {
+      width: 60%;
+      padding: 10px;
+      font-size: 16px;
+    }
+    #generateBtn {
+      padding: 10px 20px;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+    #result img {
+      margin-top: 20px;
+      max-width: 80%;
+      height: auto;
+      border: 1px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+  <h1>Text-to-Image Generator</h1>
+  <input type="text" id="prompt" placeholder="Enter your text prompt here..." />
+  <br>
+  <button id="generateBtn">Generate Image</button>
+  <div id="result">
+    <!-- Generated image will be inserted here -->
+  </div>
+
+  <script>
+    document.getElementById('generateBtn').addEventListener('click', async () => {
+      const prompt = document.getElementById('prompt').value;
+      if (!prompt) {
+        alert("Please enter a prompt.");
+        return;
+      }
+      
+      document.getElementById('result').innerHTML = "<p>Generating image...</p>";
+      
+      try {
+        const response = await fetch('/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt })
+        });
+        const data = await response.json();
+        if (data.image) {
+          document.getElementById('result').innerHTML = `<img src="data:image/png;base64,${data.image}" alt="Generated image"/>`;
+        } else {
+          document.getElementById('result').innerHTML = "<p>Error generating image.</p>";
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('result').innerHTML = "<p>Unable to generate image at this time.</p>";
+      }
+    });
+  </script>
+</body>
+</html>
